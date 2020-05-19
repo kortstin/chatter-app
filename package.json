@@ -1,0 +1,23 @@
+{
+  "name": "chatter-app",
+  "version": "1.0.0",
+  "description": "Real-time chat app using Node.js, Express, and Socket.io",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "dev": "nodemon server"
+  },
+  "author": "Kortney Stinson",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "moment": "^2.25.3",
+    "mongodb": "^3.5.7",
+    "mongoose": "^5.9.14",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
