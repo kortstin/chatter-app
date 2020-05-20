@@ -4,6 +4,7 @@ const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 
 
+
 //Get username and room from URL
 
 const {username, room } = Qs.parse(location.search, {
@@ -11,7 +12,7 @@ const {username, room } = Qs.parse(location.search, {
 
 });
 
-console.log(username, room);
+
 
 
 
@@ -73,26 +74,28 @@ function outputMessage(message) {
     document.querySelector('.chat-messages').appendChild(div);
 }
 
+//Output message log for each room to DOM
 function outputHistory(foundItems) {
-    const div = document.createElement('div');
-    div.classList.add('message');
-    div.innerHTML = `<p class="meta">${foundItems.username} <span>${foundItems.time}</span></p>
-    <p class="text">
-        ${foundItems.text}
-    </p>`;
-    document.querySelector('.chat-messages').appendChild(div);
+    
+    for (let index = 0; index < foundItems.messages.length; index++) {
+        const element = foundItems.messages[index];
+        const momentTime = moment(element.time).format('h:mm a');
+        const div = document.createElement('div');
+        div.classList.add('message');
+        div.innerHTML = `<p class="meta">${element.username} <span>${momentTime}</span></p>
+        <p class="text">
+            ${element.text}
+        </p>`;
+        document.querySelector('.chat-messages').appendChild(div);
+    }
 }
-
 
 //Add room name to DOM
 function outputRoomName(room) {
     roomName.innerText = room;
-
 }
-
 
 //Add users to DOM
 function outputUsers(users) {
     userList.innerHTML = `${users.map(user => `<li>${user.username}</li>`).join('')}`;
-
 }

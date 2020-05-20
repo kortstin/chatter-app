@@ -38,11 +38,6 @@ connection.once('open', () => {
     console.log("MongoDB database connection established successfully");
 })
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-
 // Run when client connects
 io.on('connection', socket => {
     socket.on('joinRoom', ({
@@ -59,14 +54,9 @@ io.on('connection', socket => {
         socket.emit('message', formatMessage(botName, 'Welcome to Chatter!'));
 
         //Load saved messages for specific room, if messages exist in database
-        Room.find({
-            roomID: user.room
-        }, function (err, foundItems) {
+        Room.findOne({ roomID: user.room }, function (err, foundItems) {
             if (foundItems) {
-                foundItems.forEach(foundItems => {
-                    socket.emit('load old messages', foundItems);
-                    console.log(foundItems);
-                });
+                socket.emit('load old messages', foundItems);
             } else {
                 console.log(err);
             }
@@ -94,22 +84,31 @@ io.on('connection', socket => {
 
         io.to(user.room).emit('message', formatMessage(user.username, msg));
 
-        //Save messages for room to database
+        
         const newMsg = new Room({
             roomID: user.room,
             messages: [{
                 username: user.username,
                 text: msg
             }]
-        })
-        newMsg.save((err, result) => {
-            if (err) {
-                console.log(err);
+        });
+        //Save messages for room to database
+        Room.findOneAndUpdate({roomID: user.room}, { $push: { messages: { username: user.username, text: msg } } }, function (err, docs) {
+            if (docs) {
+                //console.log("Message pushed onto " + user.room + " array");
+
+            } else if (!docs) {
+                //Create new document for current room
+                newMsg.save((err, result) => {
+                    if (err) {
+                       console.log(err);
+                    } else {
+                        //console.log("New document created in DB for: " + user.room);
+                        //console.log(result);
+                    }
+                });
             } else {
-                console.log("Message for room " + user.room + " saved to DB");
-                console.log(result);
-
-
+                console.log(err);
             }
         });
     });
